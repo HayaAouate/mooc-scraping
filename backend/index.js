@@ -33,7 +33,8 @@ app.get("/scrape", async (req, res) => {
         .trim();
 
       const price = $(el).find(".product-price.bolder.text-dark-color").text().trim();
-
+      
+    
       if (brand || title || price) {
         products.push({ brand, title, price });
       }
