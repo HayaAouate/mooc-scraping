@@ -19,6 +19,7 @@ function App() {
       })
       .catch((error) => console.error("Erreur lors du scraping :", error));
   }, []);
+  //
 
   return (
     <div>
