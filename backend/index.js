@@ -4,6 +4,7 @@ import * as cheerio from "cheerio";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
+import { getLeclercProducts } from "./leclerc.js";
 
 const app = express();
 app.use(cors());
@@ -65,6 +66,17 @@ app.get("/scrape", async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Erreur scraping :", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Route pour exposer les produits Leclerc via le backend (exécute le scraper côté serveur)
+app.get('/api/leclerc', async (req, res) => {
+  try {
+    const produits = await getLeclercProducts();
+    res.json({ produits });
+  } catch (err) {
+    console.error('Erreur getLeclercProducts:', err);
     res.status(500).json({ error: err.message });
   }
 });
