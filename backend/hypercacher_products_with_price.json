@@ -1,0 +1,38 @@
+{
+  "store": "Hypercacher (Fromages)",
+  "url_cible": "https://www.hypercacher.com/search/fromage",
+  "date_extraction": "2025-11-12T17:38:02.565Z",
+  "total_produits": 6,
+  "produits": [
+    {
+      "nom": "Fromage cottage",
+      "prix": 3.39,
+      "unite": "EUR"
+    },
+    {
+      "nom": "Fromage grec parvé",
+      "prix": 4.79,
+      "unite": "EUR"
+    },
+    {
+      "nom": "Fromage type féta parvé",
+      "prix": 3.85,
+      "unite": "EUR"
+    },
+    {
+      "nom": "Fromage râpé style emental",
+      "prix": 3.85,
+      "unite": "EUR"
+    },
+    {
+      "nom": "Fromage bleu en barquette",
+      "prix": 3.19,
+      "unite": "EUR"
+    },
+    {
+      "nom": "Fromage créme cheese nature",
+      "prix": 3.39,
+      "unite": "EUR"
+    }
+  ]
+}
