@@ -9,6 +9,33 @@ const HYPERCACHER_URL = 'https://www.hypercacher.com/search/fromage';
  * Récupère les produits (Nom et Prix) en utilisant Puppeteer pour rendre la page JS.
  * @returns {Promise<Array<{nom: string, prix: number, unite: string}>>}
  */
+
+/**
+ * Fait défiler la page jusqu'à ce qu'aucun nouveau contenu ne se charge.
+ */
+async function autoScroll(page){
+    await page.evaluate(async () => {
+        await new Promise((resolve) => {
+            let totalHeight = 0;
+            const distance = 100; // La distance de défilement par pas (en pixels)
+            const scrollDelay = 100; // Délai entre chaque défilement (pour simuler l'humain)
+            
+            // Cette fonction s'appelle en boucle
+            const timer = setInterval(() => {
+                const scrollHeight = document.body.scrollHeight;
+                window.scrollBy(0, distance); // Défilement vers le bas
+                totalHeight += distance;
+
+                // Condition d'arrêt : on a atteint le bas de la page, ou on a suffisamment scrollé
+                if(totalHeight >= scrollHeight){
+                    clearInterval(timer);
+                    resolve();
+                }
+            }, scrollDelay);
+        });
+    });
+}
+
 export async function getHypercacherProducts() {
     const products = [];
     let browser;
@@ -35,7 +62,12 @@ export async function getHypercacherProducts() {
         
         try {
             await page.waitForSelector(PRODUCT_CONTAINER_SELECTOR, { timeout: 15000 });
-            console.log(`[DEBUG] Contenu chargé. Le sélecteur ${PRODUCT_CONTAINER_SELECTOR} a été trouvé.`);
+            console.log('Debug 1er bloc de produits chargements');
+            console.log(" Démarrage du défilement à l'infini");
+            await autoScroll(page);
+            console.log(" Fin du défilement à l'infini");
+            
+            
         } catch (e) {
             console.error(`❌ Timeout: Les produits n'ont pas chargé après 10s. Le site est bloqué ou le sélecteur est faux.`);
             return [];
