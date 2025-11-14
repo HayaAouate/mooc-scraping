@@ -1,29 +1,53 @@
 version: '3.8'
 
 services:
-  backend:
-    image: node:22-bullseye
-    container_name: scraping-backend
-    working_dir: /app
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    command: sh -c "apt-get update && apt-get install -y \
-      ca-certificates wget gnupg fonts-liberation libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 lsb-release xdg-utils --no-install-recommends && rm -rf /var/lib/apt/lists/* && npm install && npm run dev"
+  mongo_db:
+    image: mongo:latest
+    container_name: mongodb_scraper
     ports:
-      - "3000:3000"
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+  backend:
+      image: node:22-bullseye
+      container_name: scraping-backend
+      working_dir: /app
+      volumes:
+        - ./backend:/app
+        - /app/node_modules
+      command: sh -c "apt-get update && apt-get install -y \
+        ca-certificates wget gnupg fonts-liberation libatk1.0-0 libatk-bridge2.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 lsb-release xdg-utils --no-install-recommends && rm -rf /var/lib/apt/lists/* && npm install && npm run dev"
+      ports:
+        - "3000:3000"
 
   frontend:
-    image: node:22-alpine
-    container_name: scraping-frontend
-    working_dir: /app
-    volumes:
-      - ./prix-malin:/app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    ports:
-      - "5173:5173"
+      image: node:22-alpine
+      container_name: scraping-frontend
+      working_dir: /app
+      volumes:
+        - ./prix-malin:/app
+      command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+      ports:
+        - "5173:5173"
+      environment:
+        - VITE_BACKEND_URL=http://backend:3000
+      depends_on:
+        - backend
+  mongo_express:
+    image: mongo-express:latest
+    container_name: mongo_express_ui
     environment:
-      - VITE_BACKEND_URL=http://backend:3000
+      ME_CONFIG_MONGODB_SERVER: mongo_db
+      ME_CONFIG_MONGODB_PORT: '27017'
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_SITE_BASEURL: '/'
+    ports:
+      - "8081:8081"
     depends_on:
-      - backend
+      - mongo_db
+volumes:
+  mongo-data: 
+  
 

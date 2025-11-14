@@ -1,3 +1,31 @@
+# Frontend — `prix-malin/`
+
+Frontend React + Vite. Ce dossier contient l'application cliente qui consomme l'API backend.
+
+Principaux fichiers
+- `src/App.tsx` : point d'entrée de l'app, appelle `/api/leclerc` et affiche la liste des produits.
+- `vite.config.ts` et `package.json` : configuration Vite et scripts.
+
+Variables d'environnement
+- `VITE_BACKEND_URL` : URL du backend (dans `docker-compose.yml` elle est réglée vers `http://backend:3000` pour l'exécution en conteneur). En dev local vous pouvez laisser l'URL par défaut `http://localhost:3000`.
+
+Exécuter en local
+```powershell
+cd prix-malin
+npm install
+npm run dev -- --host 0.0.0.0
+# puis ouvrir http://localhost:5173
+```
+
+Construire pour production
+```powershell
+npm run build
+npm run preview
+```
+
+Notes de développement
+- Le composant principal déclenche un fetch sur `/api/leclerc` au montage et propose un bouton "Rafraîchir".
+- Si vous exécutez le frontend dans Docker (via `docker-compose`), la variable `VITE_BACKEND_URL` est configurée pour pointer vers le service backend interne.
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
