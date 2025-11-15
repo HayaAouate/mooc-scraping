@@ -5,6 +5,10 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import { getLeclercProducts } from "./leclerc.js";
+import mongoose from 'mongoose';
+import Product from './models/product.js';
+
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://mongo_db:27017/mooc_scraping';
 
 const app = express();
 app.use(cors());
@@ -77,6 +81,21 @@ app.get('/api/leclerc', async (req, res) => {
     res.json({ produits });
   } catch (err) {
     console.error('Erreur getLeclercProducts:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET products from MongoDB (list all imported products)
+app.get('/api/products', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(MONGO_URL, { });
+    }
+
+    const products = await Product.find({}).sort({ name: 1 }).lean();
+    res.json({ count: products.length, products });
+  } catch (err) {
+    console.error('Erreur /api/products:', err);
     res.status(500).json({ error: err.message });
   }
 });
