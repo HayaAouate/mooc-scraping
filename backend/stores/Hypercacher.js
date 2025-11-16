@@ -5,14 +5,6 @@ import puppeteer from 'puppeteer';
 
 const HYPERCACHER_URL = 'https://www.hypercacher.com/search/fromage';
 
-/**
- * Récupère les produits (Nom et Prix) en utilisant Puppeteer pour rendre la page JS.
- * @returns {Promise<Array<{nom: string, prix: number, unite: string}>>}
- */
-
-/**
- * Fait défiler la page jusqu'à ce qu'aucun nouveau contenu ne se charge.
- */
 async function autoScroll(page){
     await page.evaluate(async () => {
         await new Promise((resolve) => {
@@ -84,18 +76,33 @@ export async function getHypercacherProducts() {
 
             const nom = $product.find('div.name').first().text().replace(/\s+/g, ' ').trim();
             
-    
             let priceText = $product.find('.product-price .price').first().text().trim(); 
 
             priceText = priceText.replace(/€/g, '').replace(',', '.').replace(/[^\d.]/g, ''); 
             
             const prix = parseFloat(priceText);
+
+            const image_div = $product.find('.image').first(); 
+            
+    
+            const styleAttr = image_div.attr('style') || '';
+            let imageUrl = '';
+            
+            const match = styleAttr.match(/url\(['"]?(.*?)['"]?\)/); 
+
+            if (match && match[1]) {
+                imageUrl = match[1].trim(); 
+            }
+            const image_url = imageUrl;
+    
+
             
             if (nom && !isNaN(prix) && prix > 0) {
                 products.push({ 
                     nom, 
                     prix: parseFloat(prix.toFixed(2)),
-                    unite: 'EUR' 
+                    unite: 'EUR' ,
+                    image_url: image_url 
                 });
                 productsExtracted++;
             }
@@ -136,4 +143,4 @@ export async function runScraping() {
 
     fs.writeFileSync(outputFilePath, JSON.stringify(jsonOutput, null, 2), 'utf-8');
     console.log(`\n✅ SUCCÈS! Extraction terminée. ${products.length} produits sauvegardés dans ${outputFilePath}`);
-}
+}       
