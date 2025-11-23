@@ -45,3 +45,15 @@ node test-mongo.js
 
 Persistance
 - Le backend peut être adapté pour enregistrer les produits dans Mongo via Mongoose. Si vous voulez que j'ajoute un modèle `Product` et que j'enregistre automatiquement les résultats de `runHypercacher()` et `getLeclercProducts()`, dites‑le et je l'implémente.
+Migration: avec la cmd:
+docker compose exec backend node migrate-add-fields.js
+docker compose exec backend node import-hypercacher.js
+
+Comment utiliser maintenant
+
+Démarrer l'application normalement : le backend n'exécutera aucun scraping au démarrage (aucune requête DOM/Puppeteer lancée automatiquement).
+Lancer le scraper à la demande (depuis l'hôte ou dans le conteneur backend) :
+Dans le conteneur backend :
+docker compose exec backend node run-hypercacher.js
+
+migration: node migrations/20251116-import-hypercacher-json.js
